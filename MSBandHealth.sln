@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSBandHealth", "MSBandHealth\MSBandHealth.csproj", "{AB44F4DC-0842-4235-938A-CAEB49CB33B7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{B8F8A734-58A3-4C11-8876-EE057C9E80F7}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\AzureWebsitePublishModule.psm1 = PublishScripts\AzureWebsitePublishModule.psm1
+		PublishScripts\Publish-WebApplicationWebsite.ps1 = PublishScripts\Publish-WebApplicationWebsite.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{0DF48A31-2428-4158-B968-D5CB4A68F7B2}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\Configurations\MSBandHealth-WAWS-dev.json = PublishScripts\Configurations\MSBandHealth-WAWS-dev.json
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB44F4DC-0842-4235-938A-CAEB49CB33B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB44F4DC-0842-4235-938A-CAEB49CB33B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB44F4DC-0842-4235-938A-CAEB49CB33B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB44F4DC-0842-4235-938A-CAEB49CB33B7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0DF48A31-2428-4158-B968-D5CB4A68F7B2} = {B8F8A734-58A3-4C11-8876-EE057C9E80F7}
+	EndGlobalSection
+EndGlobal
