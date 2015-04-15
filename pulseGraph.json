@@ -1,0 +1,106 @@
+$.getJSON('http://msbandhealth.azurewebsites.net/odata/PulsesAPI', function(data)
+{
+                    console.log(data);
+});
+
+
+$(function () {
+    $(document).ready(function () {
+        Highcharts.setOptions({
+            global: {
+                useUTC: false
+            }
+        });
+
+        $('#pulseChart').highcharts({
+            chart: {
+                type: 'spline',
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                events: {
+                    load: function () {
+                        // set up the updating of the chart each second
+                                                
+                        arr = [];
+  
+                        var series = this.series[0];
+                        setInterval(function () {
+                            $.getJSON('http://msbandhealth.azurewebsites.net/odata/PulsesAPI', function(data)
+{
+
+    json = data.value;
+
+    for(var i = 0; i < json.length; i++) {
+    hr = data.value[i].BPM;
+    date = data.value[i].Time;
+    var myDate = new Date(date);
+    var offset = myDate.getTimezoneOffset() * 1000;
+    var withOffset = myDate.getTime();
+    var withoutOffset = withOffset - offset;
+    arr.push([hr,  withOffset]);
+}   
+
+console.log(arr);
+
+});
+                            //console.log(arr);
+                            var x = arr[0][1]; // time
+                            var y = arr[0][0]; // BPM
+                            console.log(x); //this outputs the correct time
+                            console.log(y); //this outputs the correct BPM
+                            series.addPoint([x, y], true, true); //throws an undefined point
+                        }, 3000);
+                        }
+                    }
+            },
+            title: {
+                text: 'Heart Rate Over Time'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 500
+            },
+            yAxis: {
+                title: {
+                    text: 'Heart Rate'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<b>' + this.series.name + '</b><br/>' +
+                        Highcharts.dateFormat('%H:%M:%S', this.x) + '<br/>' +
+                        Highcharts.numberFormat(this.y, 5);
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                 name: 'Pulse Data',
+                 data: (function () {
+                     // generate an array of random data
+                     var data = [],
+                         time = (new Date()).getTime() - 10*3000,
+                         i;
+
+                     for (i = -10; i <= 0; i += 1) {
+                         data.push({
+                             x: time + i * 3000,
+                             y: ((Math.random() * 160) + 40)
+                         });
+                     }
+                     return data;
+                 }
+                 ())
+            }]
+        });
+    });
+});
