@@ -52,6 +52,22 @@ namespace MSBandHealth.Migrations
                 new SkinTemperature { Id = 3, Name = "Rick Grimes", Time = DateTime.Now.AddMinutes(3), Temperature = 33.1 },
                 new SkinTemperature { Id = 4, Name = "Rick Grimes", Time = DateTime.Now.AddMinutes(4), Temperature = 33.5 }
             );
+
+            context.Distances.AddOrUpdate(p => p.Id,
+                new Distance { Id = 0, Name = "Rick Grimes", Time = DateTime.Now.AddMinutes(0), Length = 0 },
+                new Distance { Id = 1, Name = "Rick Grimes", Time = DateTime.Now.AddMinutes(1), Length = 20 },
+                new Distance { Id = 2, Name = "Rick Grimes", Time = DateTime.Now.AddMinutes(2), Length = 30 },
+                new Distance { Id = 3, Name = "Rick Grimes", Time = DateTime.Now.AddMinutes(3), Length = 40 },
+                new Distance { Id = 4, Name = "Rick Grimes", Time = DateTime.Now.AddMinutes(4), Length = 60 }
+            );
+
+            context.Steps.AddOrUpdate(p => p.Id,
+                new Step { Id = 0, Name = "Rick Grimes", Time = DateTime.Now.AddMinutes(0), Steps = 0 },
+                new Step { Id = 1, Name = "Rick Grimes", Time = DateTime.Now.AddMinutes(1), Steps = 5 },
+                new Step { Id = 2, Name = "Rick Grimes", Time = DateTime.Now.AddMinutes(2), Steps = 10 },
+                new Step { Id = 3, Name = "Rick Grimes", Time = DateTime.Now.AddMinutes(3), Steps = 15 },
+                new Step { Id = 4, Name = "Rick Grimes", Time = DateTime.Now.AddMinutes(4), Steps = 20 }
+            );
         }
     }
 }

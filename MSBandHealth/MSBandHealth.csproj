@@ -144,11 +144,15 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActivityLevelsAPIController.cs" />
     <Compile Include="Controllers\ActivityLevelsController.cs" />
+    <Compile Include="Controllers\DistancesAPIController.cs" />
+    <Compile Include="Controllers\DistancesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PulseController.cs" />
     <Compile Include="Controllers\PulsesAPIController.cs" />
     <Compile Include="Controllers\SkinTemperaturesAPIController.cs" />
     <Compile Include="Controllers\SkinTemperaturesController.cs" />
+    <Compile Include="Controllers\StepsAPIController.cs" />
+    <Compile Include="Controllers\StepsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -160,11 +164,17 @@
     <Compile Include="Migrations\201504131617269_AddSkinTemp.Designer.cs">
       <DependentUpon>201504131617269_AddSkinTemp.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201504151634197_DistanceAndSteps.cs" />
+    <Compile Include="Migrations\201504151634197_DistanceAndSteps.Designer.cs">
+      <DependentUpon>201504151634197_DistanceAndSteps.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Distance.cs" />
     <Compile Include="Models\SkinTemperature.cs" />
     <Compile Include="Models\Configuration.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
     <Compile Include="Models\ActivityLevel.cs" />
     <Compile Include="Models\Pulse.cs" />
+    <Compile Include="Models\Step.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -254,6 +264,16 @@
     <Content Include="Views\SkinTemperatures\Details.cshtml" />
     <Content Include="Views\SkinTemperatures\Edit.cshtml" />
     <Content Include="Views\SkinTemperatures\Index.cshtml" />
+    <Content Include="Views\Steps\Create.cshtml" />
+    <Content Include="Views\Steps\Delete.cshtml" />
+    <Content Include="Views\Steps\Details.cshtml" />
+    <Content Include="Views\Steps\Edit.cshtml" />
+    <Content Include="Views\Steps\Index.cshtml" />
+    <Content Include="Views\Distances\Create.cshtml" />
+    <Content Include="Views\Distances\Delete.cshtml" />
+    <Content Include="Views\Distances\Details.cshtml" />
+    <Content Include="Views\Distances\Edit.cshtml" />
+    <Content Include="Views\Distances\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -271,6 +291,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201504131617269_AddSkinTemp.resx">
       <DependentUpon>201504131617269_AddSkinTemp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504151634197_DistanceAndSteps.resx">
+      <DependentUpon>201504151634197_DistanceAndSteps.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

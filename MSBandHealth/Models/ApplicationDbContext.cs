@@ -31,6 +31,10 @@ namespace MSBandHealth.Models
         public System.Data.Entity.DbSet<MSBandHealth.Models.ActivityLevel> ActivityLevels { get; set; }
 
         public System.Data.Entity.DbSet<MSBandHealth.Models.SkinTemperature> SkinTemperatures { get; set; }
+
+        public System.Data.Entity.DbSet<MSBandHealth.Models.Step> Steps { get; set; }
+
+        public System.Data.Entity.DbSet<MSBandHealth.Models.Distance> Distances { get; set; }
     
     }
 }

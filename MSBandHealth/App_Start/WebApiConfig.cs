@@ -17,6 +17,8 @@ namespace MSBandHealth
             builder.EntitySet<Pulse>("PulsesAPI");
             builder.EntitySet<ActivityLevel>("ActivityLevelsAPI");
             builder.EntitySet<SkinTemperature>("SkinTemperaturesAPI");
+            builder.EntitySet<Distance>("DistancesAPI");
+            builder.EntitySet<Step>("StepsAPI");
             config.Routes.MapODataServiceRoute("odata", "odata", builder.GetEdmModel());
     
             // Web API routes
