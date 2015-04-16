@@ -39,18 +39,18 @@ $(function() {
             dataType: 'json',
             context: seriesData,
             success: function(data) {
-                console.log(data);
+
 
                 // structure our data 
-                data.value.forEach(function(element, index) {
-                    BPM = data.value[index].BPM;
-                    time = data.value[index].Time;
-                    seriesData.push([time, BPM]);
-                    seriesData.BPM.push(BPM);
-
-                });
-
-                console.log(seriesData);
+                for (var i = 0; i < data.value.length; i++) {
+                    BPM = data.value[i].BPM;
+                    console.log(BPM);
+                    time = data.value[i].Time;
+                    this.push([time, BPM]);
+                    this.BPM.push(BPM);
+                    // console.log(seriesData.BPM[376]);
+                }
+                // console.log(seriesData.BPM[376]);
 
                 // find the highest pulse and so we can set it to the highest y poing
                 this.chart1.yAxisMax = (function(array) {
