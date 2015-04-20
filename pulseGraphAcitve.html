@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.js"></script>
+</head>
+
+<body>
+    <div id="container" style="width:100%"></div>
+</body>
+<script>
+chart1 = {
+    yAxisMin: 40,
+    yAxisMax: 90
+};
+// empty objects for our data and to create chart
+seriesData = [];
+BPM = [];
+time1 = [];
+
+// console.log(chart1.data.series);
+
+$(function() {
+    $(document).ready(function() {
+        Highcharts.setOptions({
+            global: {
+                useUTC: false
+            }
+        });
+
+
+
+        var url = 'http://msbandhealth.azurewebsites.net/odata/PulsesAPI/';
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            context: seriesData,
+            success: function(data) {
+
+                console.log(data);
+
+                // structure our data 
+                for (var i = 0; i < data.value.length; i++) {
+                    bpm = data.value[i].BPM;
+                    time = data.value[i].Time;
+                    BPM.push({
+                            x: (new Date().getTime()),
+                            y: bpm
+                        })
+                        // console.log(BPM);
+                    time1.push(time);
+                }
+
+                console.log((new Date().getTime()));
+                console.log(moment(time, "DD.MM.YYYY hh:mm:ss"));
+                console.log(BPM);
+                console.log(BPM[BPM.length - 1]);
+                // console.log(seriesData);
+
+                // set our data series and create new chart
+                chart1.data.series[0].data = BPM;
+
+                chart = new Highcharts.Chart(chart1.data);
+                $('#container').css({
+                    height: '400px'
+                });
+
+
+                // console.log(sortedBPM);
+
+
+                // console.log(time1);
+
+            }
+
+        });
+
+
+
+        // give highcharts something to render to
+        container = document.getElementById("container");
+
+        chart1.data = {
+
+            chart: {
+                renderTo: container,
+                type: 'spline',
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                events: {
+                    load: function() {
+                        setInterval(function() {
+
+                                // find last data points
+                                var test = BPM[BPM.length - 1];
+                                var x = (new Date().getTime()),
+                                    y = test.y;
+
+                                shift = chart.series[0].data.length > 10;
+                                chart.series[0].addPoint([x, y], true, shift);
+
+
+
+
+                            },
+                            60000);
+                    }
+                }
+
+            },
+            title: {
+                text: 'Microsoft Band: Real Time Pulse Analysis'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 125,
+                dateTimeLabelFormats: {
+
+
+                },
+            },
+            yAxis: {
+                min: chart1.yAxisMin,
+                max: chart1.yAxisMax,
+                title: {
+                    text: 'Heart Rate'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                formatter: function() {
+                    return '<b>' + this.series.name + '</b><br/>' +
+                        Highcharts.dateFormat('%H:%M:%S', this.x) + '<br/>' +
+                        Highcharts.numberFormat(this.y, 2);
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: 'Beats Per Minute',
+                data: []
+            }]
+
+
+        };
+
+    });
+});
+</script>
+
+</html>
