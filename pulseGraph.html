@@ -4,18 +4,24 @@
 <head>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.js"></script>
 </head>
 
 <body>
     <div id="container" style="width:100%"></div>
 </body>
 <script>
-// console.log(data.value);
-// bring bpm and time data into variables 
+chart1 = {
+    yAxisMin: 40,
+    yAxisMax: 100
+};
+// empty objects for our data and to create chart
+seriesData = [];
+BPM = [];
+time1 = [];
 
-// console.log(time);
-// console.log(bpm);
-// Start HighChart
+// console.log(chart1.data.series);
+
 $(function() {
     $(document).ready(function() {
         Highcharts.setOptions({
@@ -24,71 +30,62 @@ $(function() {
             }
         });
 
-        // empty objects for our data and to create chart
-        seriesData = [];
-        chart1 = {
-            yAxisMin: null,
-            yAxisMax: null
-        };
-        BPM = [];
-        time1 = [];
 
-        var url = 'http://msbandhealth.azurewebsites.net/odata/PulsesAPI/';
+        function requestData() {
+            var url = 'http://msbandhealth.azurewebsites.net/odata/PulsesAPI/';
+            $.ajax({
+                url: url,
+                dataType: 'json',
+                context: seriesData,
+                success: function(data) {
 
-        $.ajax({
-            url: url,
-            dataType: 'json',
-            context: seriesData,
-            success: function(data) {
+                    BPM = [];
+                    time1 = [];
+                    // structure our data 
+                    for (var i = 0; i < data.value.length; i++) {
+                        bpm = data.value[i].BPM;
+                        time = data.value[i].Time;
+                        // console.log(time);
+                        // this.push([time, BPM]);
 
+                        BPM.push({
+                                x: moment.parseZone(time),
+                                y: bpm
+                            })
+                            // console.log(BPM);
+                        time1.push(time);
+                    }
+                    console.log(moment(time, "DD.MM.YYYY hh:mm:ss"));
+                    // console.log(BPM);
+                    // console.log(seriesData);
 
-                // structure our data 
-                for (var i = 0; i < data.value.length; i++) {
-                    bpm = data.value[i].BPM;
-                    time = data.value[i].Time;
-                    console.log(time);
-                    this.push([time, BPM]);
-                    BPM.push(bpm);
-                    time1.push(time);
+                    // set our data series and create new chart
+                    chart1.data.series[0].data = BPM;
+
+                    chart = new Highcharts.Chart(chart1.data);
+                    $('#container').css({
+                        height: '400px'
+                    });
+
+                    shift = chart1.data.series[0].data.length > 10;
+
+                    var sortedBPM = BPM.sort(function(a, b) {
+                        return a - b;
+                    })
+
+                    // console.log(sortedBPM);
+                    chart.series[0].addPoint(BPM, true, shift);
+
+                    // setTimeout(requestData, 3000);
+
+                    // console.log(time1);
                 }
 
-                console.log(seriesData);
-                // find the highest pulse  so we can set it to the highest y point
-                chart1.yAxisMax = (function(array) {
-                    var pulse_array = [];
-
-                    for (var i = 0; i < array.length; i++) {
-                        if (array[i] != null) {
-                            pulse_array.push(array[i]);
-                        }
-                    }
-                    return Math.max.apply(Math, pulse_array);
-                })(BPM);
-
-                // find the lowest pulse rate and set it to lowest y point
-                chart1.yAxisMin = (function(array) {
-                    var pulse_array = [];
-
-                    for (var i = 0; i < array.length; i++) {
-                        if (array[i] != null) {
-                            pulse_array.push(array[i]);
-                        }
-                    }
-                    return Math.min.apply(Math, pulse_array);
-                })(BPM);
-
-                // set our data series and create new chart
-                chart1.data.series[0].data = BPM;
-                chart = new Highcharts.Chart(chart1.data);
-                $('#container').css({
-                    height: '400px'
-                });
-            }
-        })
-
+            });
+        }
 
         // give highcharts something to render to
-        var container = document.getElementById("container")
+        container = document.getElementById("container");
 
         chart1.data = {
 
@@ -98,17 +95,7 @@ $(function() {
                 animation: Highcharts.svg, // don't animate in old IE
                 marginRight: 10,
                 events: {
-                    load: function() {
-
-                        // set up the updating of the chart each second
-                        // needs to be an ajax call to microsoft band api
-                        // var series = this.series[0].data;
-                        // setInterval(function() {
-                        //     var x = time1, // current time
-                        //         y = BPM;
-                        //     series.addPoint([x, y], true, true);
-                        // }, 1000);
-                    }
+                    load: requestData()
                 }
             },
             title: {
@@ -116,7 +103,11 @@ $(function() {
             },
             xAxis: {
                 type: 'datetime',
-                tickPixelInterval: 150
+                tickPixelInterval: 80,
+                dateTimeLabelFormats: {
+
+
+                },
             },
             yAxis: {
                 min: chart1.yAxisMin,
@@ -145,7 +136,7 @@ $(function() {
             },
             series: [{
                 name: 'Beats Per Minute',
-                data: null
+                data: []
             }]
 
 
