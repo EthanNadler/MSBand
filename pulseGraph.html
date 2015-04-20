@@ -33,53 +33,49 @@ $(function() {
 
         function requestData() {
             var url = 'http://msbandhealth.azurewebsites.net/odata/PulsesAPI/';
-            $.ajax({
-                url: url,
-                dataType: 'json',
-                context: seriesData,
-                success: function(data) {
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            context: seriesData,
+            success: function(data) {
 
-                    BPM = [];
-                    time1 = [];
-                    // structure our data 
-                    for (var i = 0; i < data.value.length; i++) {
-                        bpm = data.value[i].BPM;
-                        time = data.value[i].Time;
-                        // console.log(time);
-                        // this.push([time, BPM]);
 
-                        BPM.push({
-                                x: moment.parseZone(time),
-                                y: bpm
-                            })
-                            // console.log(BPM);
-                        time1.push(time);
-                    }
-                    console.log(moment(time, "DD.MM.YYYY hh:mm:ss"));
-                    // console.log(BPM);
-                    // console.log(seriesData);
 
-                    // set our data series and create new chart
-                    chart1.data.series[0].data = BPM;
-
-                    chart = new Highcharts.Chart(chart1.data);
-                    $('#container').css({
-                        height: '400px'
-                    });
-
-                    shift = chart1.data.series[0].data.length > 10;
-
-                    var sortedBPM = BPM.sort(function(a, b) {
-                        return a - b;
-                    })
-
-                    // console.log(sortedBPM);
-                    chart.series[0].addPoint(BPM, true, shift);
-
-                    // setTimeout(requestData, 3000);
-
-                    // console.log(time1);
+                // structure our data 
+                for (var i = 0; i < data.value.length; i++) {
+                    bpm = data.value[i].BPM;
+                    time = data.value[i].Time;
+                    BPM.push({
+                            x: moment.parseZone(time, "hh:mm:ss"),
+                            y: bpm
+                        })
+                        // console.log(BPM);
+                    time1.push(time);
                 }
+
+                console.log(moment(time, "DD.MM.YYYY hh:mm:ss"));
+                console.log(BPM);
+                console.log(BPM[BPM.length - 1]);
+                // console.log(seriesData);
+
+                // set our data series and create new chart
+                chart1.data.series[0].data = BPM;
+
+                chart = new Highcharts.Chart(chart1.data);
+                $('#container').css({
+                    height: '400px'
+                });
+
+
+                // console.log(sortedBPM);
+
+
+                // console.log(time1);
+
+            }
+
+        });
+
 
             });
         }
@@ -95,8 +91,25 @@ $(function() {
                 animation: Highcharts.svg, // don't animate in old IE
                 marginRight: 10,
                 events: {
-                    load: requestData()
+                    load: function() {
+                        setInterval(function() {
+
+                                // find last data points
+                                var test = BPM[BPM.length - 1];
+                                var x = test.x.d,
+                                    y = test.y;
+
+                                shift = chart.series[0].data.length - 10;
+                                chart.series[0].addPoint([x, y], true, shift);
+
+
+
+
+                            },
+                            1000);
+                    }
                 }
+
             },
             title: {
                 text: 'Microsoft Band: Real Time Pulse Analysis'
