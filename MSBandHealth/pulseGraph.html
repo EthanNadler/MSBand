@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!doctype html>
 <html>
 
@@ -14,316 +13,7 @@
 <script>
 chart1 = {
     yAxisMin: 40,
-    yAxisMax: 100
-};
-// empty objects for our data and to create chart
-seriesData = [];
-BPM = [];
-time1 = [];
-
-// console.log(chart1.data.series);
-
-$(function() {
-    $(document).ready(function() {
-        Highcharts.setOptions({
-            global: {
-                useUTC: false
-            }
-        });
-
-
-        function requestData() {
-            var url = 'http://msbandhealth.azurewebsites.net/odata/PulsesAPI/';
-            $.ajax({
-                url: url,
-                dataType: 'json',
-                context: seriesData,
-                success: function(data) {
-
-                    BPM = [];
-                    time1 = [];
-                    // structure our data 
-                    for (var i = 0; i < data.value.length; i++) {
-                        bpm = data.value[i].BPM;
-                        time = data.value[i].Time;
-                        // console.log(time);
-                        // this.push([time, BPM]);
-
-                        BPM.push({
-                                x: moment.parseZone(time),
-                                y: bpm
-                            })
-                            // console.log(BPM);
-                        time1.push(time);
-                    }
-                    console.log(moment(time, "DD.MM.YYYY hh:mm:ss"));
-                    // console.log(BPM);
-                    // console.log(seriesData);
-
-                    // set our data series and create new chart
-                    chart1.data.series[0].data = BPM;
-
-                    chart = new Highcharts.Chart(chart1.data);
-                    $('#container').css({
-                        height: '400px'
-                    });
-
-                    shift = chart1.data.series[0].data.length > 10;
-
-                    var sortedBPM = BPM.sort(function(a, b) {
-                        return a - b;
-                    })
-
-                    // console.log(sortedBPM);
-                    chart.series[0].addPoint(BPM, true, shift);
-
-                    // setTimeout(requestData, 3000);
-
-                    // console.log(time1);
-                }
-
-            });
-        }
-
-        // give highcharts something to render to
-        container = document.getElementById("container");
-
-        chart1.data = {
-
-            chart: {
-                renderTo: container,
-                type: 'spline',
-                animation: Highcharts.svg, // don't animate in old IE
-                marginRight: 10,
-                events: {
-                    load: requestData()
-                }
-            },
-            title: {
-                text: 'Microsoft Band: Real Time Pulse Analysis'
-            },
-            xAxis: {
-                type: 'datetime',
-                tickPixelInterval: 80,
-                dateTimeLabelFormats: {
-
-
-                },
-            },
-            yAxis: {
-                min: chart1.yAxisMin,
-                max: chart1.yAxisMax,
-                title: {
-                    text: 'Heart Rate'
-                },
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color: '#808080'
-                }]
-            },
-            tooltip: {
-                formatter: function() {
-                    return '<b>' + this.series.name + '</b><br/>' +
-                        Highcharts.dateFormat('%H:%M:%S', this.x) + '<br/>' +
-                        Highcharts.numberFormat(this.y, 2);
-                }
-            },
-            legend: {
-                enabled: false
-            },
-            exporting: {
-                enabled: false
-            },
-            series: [{
-                name: 'Beats Per Minute',
-                data: []
-            }]
-
-
-        };
-
-    });
-});
-</script>
-
-</html>
-||||||| merged common ancestors
-<!doctype html>
-<html>
-
-<head>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    <script src="http://code.highcharts.com/highcharts.js"></script>
-</head>
-
-<body>
-    <div id="container" style="width:100%"></div>
-</body>
-<script>
-// console.log(data.value);
-// bring bpm and time data into variables 
-
-// console.log(time);
-// console.log(bpm);
-// Start HighChart
-$(function() {
-    $(document).ready(function() {
-        Highcharts.setOptions({
-            global: {
-                useUTC: false
-            }
-        });
-
-        // empty objects for our data and to create chart
-        seriesData = [];
-        chart1 = {
-            yAxisMin: null,
-            yAxisMax: null
-        };
-        BPM = [];
-        time1 = [];
-
-        var url = 'http://msbandhealth.azurewebsites.net/odata/PulsesAPI/';
-
-        $.ajax({
-            url: url,
-            dataType: 'json',
-            context: seriesData,
-            success: function(data) {
-
-
-                // structure our data 
-                for (var i = 0; i < data.value.length; i++) {
-                    bpm = data.value[i].BPM;
-                    time = data.value[i].Time;
-                    console.log(time);
-                    this.push([time, BPM]);
-                    BPM.push(bpm);
-                    time1.push(time);
-                }
-
-                console.log(seriesData);
-                // find the highest pulse  so we can set it to the highest y point
-                chart1.yAxisMax = (function(array) {
-                    var pulse_array = [];
-
-                    for (var i = 0; i < array.length; i++) {
-                        if (array[i] != null) {
-                            pulse_array.push(array[i]);
-                        }
-                    }
-                    return Math.max.apply(Math, pulse_array);
-                })(BPM);
-
-                // find the lowest pulse rate and set it to lowest y point
-                chart1.yAxisMin = (function(array) {
-                    var pulse_array = [];
-
-                    for (var i = 0; i < array.length; i++) {
-                        if (array[i] != null) {
-                            pulse_array.push(array[i]);
-                        }
-                    }
-                    return Math.min.apply(Math, pulse_array);
-                })(BPM);
-
-                // set our data series and create new chart
-                chart1.data.series[0].data = BPM;
-                chart = new Highcharts.Chart(chart1.data);
-                $('#container').css({
-                    height: '400px'
-                });
-            }
-        })
-
-
-        // give highcharts something to render to
-        var container = document.getElementById("container")
-
-        chart1.data = {
-
-            chart: {
-                renderTo: container,
-                type: 'spline',
-                animation: Highcharts.svg, // don't animate in old IE
-                marginRight: 10,
-                events: {
-                    load: function() {
-
-                        // set up the updating of the chart each second
-                        // needs to be an ajax call to microsoft band api
-                        // var series = this.series[0].data;
-                        // setInterval(function() {
-                        //     var x = time1, // current time
-                        //         y = BPM;
-                        //     series.addPoint([x, y], true, true);
-                        // }, 1000);
-                    }
-                }
-            },
-            title: {
-                text: 'Microsoft Band: Real Time Pulse Analysis'
-            },
-            xAxis: {
-                type: 'datetime',
-                tickPixelInterval: 150
-            },
-            yAxis: {
-                min: chart1.yAxisMin,
-                max: chart1.yAxisMax,
-                title: {
-                    text: 'Heart Rate'
-                },
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color: '#808080'
-                }]
-            },
-            tooltip: {
-                formatter: function() {
-                    return '<b>' + this.series.name + '</b><br/>' +
-                        Highcharts.dateFormat('%H:%M:%S', this.x) + '<br/>' +
-                        Highcharts.numberFormat(this.y, 2);
-                }
-            },
-            legend: {
-                enabled: false
-            },
-            exporting: {
-                enabled: false
-            },
-            series: [{
-                name: 'Beats Per Minute',
-                data: null
-            }]
-
-
-        };
-
-    });
-});
-</script>
-
-</html>
-=======
-<!doctype html>
-<html>
-
-<head>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    <script src="http://code.highcharts.com/highcharts.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.js"></script>
-</head>
-
-<body>
-    <div id="container" style="width:100%"></div>
-</body>
-<script>
-chart1 = {
-    yAxisMin: 40,
-    yAxisMax: 100
+    yAxisMax: 90
 };
 // empty objects for our data and to create chart
 seriesData = [];
@@ -349,20 +39,21 @@ $(function() {
             context: seriesData,
             success: function(data) {
 
-
+                console.log(data);
 
                 // structure our data 
                 for (var i = 0; i < data.value.length; i++) {
                     bpm = data.value[i].BPM;
                     time = data.value[i].Time;
                     BPM.push({
-                            x: moment.parseZone(time, "hh:mm:ss"),
+                            x: moment(time),
                             y: bpm
                         })
                         // console.log(BPM);
                     time1.push(time);
                 }
 
+                console.log((new Date().getTime()));
                 console.log(moment(time, "DD.MM.YYYY hh:mm:ss"));
                 console.log(BPM);
                 console.log(BPM[BPM.length - 1]);
@@ -404,17 +95,17 @@ $(function() {
 
                                 // find last data points
                                 var test = BPM[BPM.length - 1];
-                                var x = test.x.d,
+                                var x = test.x,
                                     y = test.y;
 
-                                shift = chart.series[0].data.length - 10;
+                                shift = chart.series[0].data.length > 10;
                                 chart.series[0].addPoint([x, y], true, shift);
 
 
 
 
                             },
-                            1000);
+                            60000);
                     }
                 }
 
@@ -424,7 +115,7 @@ $(function() {
             },
             xAxis: {
                 type: 'datetime',
-                tickPixelInterval: 80,
+                tickPixelInterval: 125,
                 dateTimeLabelFormats: {
 
 
@@ -468,4 +159,3 @@ $(function() {
 </script>
 
 </html>
->>>>>>> seanlarge-Change_Interval
