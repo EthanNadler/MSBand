@@ -31,8 +31,8 @@ $(function() {
         });
 
 
-        function requestData() {
-            var url = 'http://msbandhealth.azurewebsites.net/odata/PulsesAPI/';
+
+        var url = 'http://msbandhealth.azurewebsites.net/odata/PulsesAPI/';
         $.ajax({
             url: url,
             dataType: 'json',
@@ -46,10 +46,10 @@ $(function() {
                     bpm = data.value[i].BPM;
                     time = data.value[i].Time;
                     BPM.push({
-                            x: moment.parseZone(time, "hh:mm:ss"),
-                            y: bpm
-                        })
-                        // console.log(BPM);
+                        x: moment.parseZone(time),
+                        y: bpm
+                    });
+                    // console.log(BPM);
                     time1.push(time);
                 }
 
@@ -77,11 +77,10 @@ $(function() {
         });
 
 
-            });
-        }
+
 
         // give highcharts something to render to
-        container = document.getElementById("container");
+        var container = document.getElementById("container");
 
         chart1.data = {
 
@@ -98,8 +97,9 @@ $(function() {
                                 var test = BPM[BPM.length - 1];
                                 var x = test.x.d,
                                     y = test.y;
+                                console.log(x);
 
-                                shift = chart.series[0].data.length - 10;
+                                shift = chart.series[0].data.length > s0;
                                 chart.series[0].addPoint([x, y], true, shift);
 
 
@@ -116,7 +116,7 @@ $(function() {
             },
             xAxis: {
                 type: 'datetime',
-                tickPixelInterval: 80,
+                tickPixelInterval: 125,
                 dateTimeLabelFormats: {
 
 
