@@ -9,14 +9,18 @@
 
 <body>
     <div id="container" style="width:100%"></div>
+    <br>
+    <br>
+    <div id="chartcontainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
 </body>
 <script>
 chart1 = {
-    yAxisMin: 40,
-    yAxisMax: 100
+    yAxisMin: null,
+    yAxisMax: null
 };
 // empty objects for our data and to create chart
-seriesData = [];
+
 BPM = [];
 time1 = [];
 
@@ -36,51 +40,65 @@ $(function() {
         $.ajax({
             url: url,
             dataType: 'json',
-            context: seriesData,
+            context: BPM,
             success: function(data) {
 
-
+                // console.log(data);
 
                 // structure our data 
                 for (var i = 0; i < data.value.length; i++) {
                     bpm = data.value[i].BPM;
                     time = data.value[i].Time;
                     BPM.push({
-                        x: moment.parseZone(time),
-                        y: bpm
-                    });
-                    // console.log(BPM);
-                    time1.push(time);
+                            x: moment.parseZone(time),
+                            y: bpm
+                        });
+                        // console.log(BPM);
+                   ;
+                    // console.log(moment(time, "HH:mm"));
                 }
+               
+                // find the highest and lowest Heart Rate and make that the Ymin and Ymax
+                chart1.yAxisMax = (function (array) {
+                    var pulse_array = [];
 
-                console.log(moment(time, "DD.MM.YYYY hh:mm:ss"));
-                console.log(BPM);
-                console.log(BPM[BPM.length - 1]);
-                // console.log(seriesData);
+                    for (var i = 0; i < array.length; i++) {
+                        if (array[i] != null) {
+                            pulse_array.push(array[i]);
+                        }
+                    }
+                    return Math.max.apply(Math, pulse_array);
+                })(BPM);
 
-                // set our data series and create new chart
-                chart1.data.series[0].data = BPM;
+                chart1.yAxisMin = (function (array) {
+                    var pulse_array = [];
 
+                    for (var i = 0; i < array.length; i++) {
+                        if (array[i] != null) {
+                            pulse_array.push(array[i]);
+                        }
+                    }
+                    return Math.min.apply(Math, pulse_array);
+                })(BPM);
+               
+
+                
+                // only let highcharts use last 15 data points so x axis displays properly 
+                var last15BPM = BPM.slice(Math.max(BPM.length - 15,1)) 
+                // set our data series 
+                chart1.data.series[0].data = last15BPM;
+                // create the chart 
                 chart = new Highcharts.Chart(chart1.data);
-                $('#container').css({
-                    height: '400px'
-                });
+                
 
-
-                // console.log(sortedBPM);
-
-
-                // console.log(time1);
 
             }
 
         });
 
 
-
-
         // give highcharts something to render to
-        var container = document.getElementById("container");
+        container = document.getElementById("container");
 
         chart1.data = {
 
@@ -89,38 +107,24 @@ $(function() {
                 type: 'spline',
                 animation: Highcharts.svg, // don't animate in old IE
                 marginRight: 10,
-                events: {
-                    load: function() {
-                        setInterval(function() {
-
-                                // find last data points
-                                var test = BPM[BPM.length - 1];
-                                var x = test.x.d,
-                                    y = test.y;
-                                console.log(x);
-
-                                shift = chart.series[0].data.length > s0;
-                                chart.series[0].addPoint([x, y], true, shift);
-
-
-
-
-                            },
-                            1000);
-                    }
-                }
-
-            },
+                events:{ 
+                    load: requestData()
+            }
+        },
             title: {
                 text: 'Microsoft Band: Real Time Pulse Analysis'
             },
             xAxis: {
                 type: 'datetime',
-                tickPixelInterval: 125,
-                dateTimeLabelFormats: {
-
-
-                },
+                tickPixelInterval: 1,
+               dateTimeLabelFormats: {
+                    millisecond: '%H:%M:%S.%L',
+                    second: '%H:%M:%S',
+                    minute: '%H:%M',
+                    hour: '%H:%M',
+                   
+                }
+                
             },
             yAxis: {
                 min: chart1.yAxisMin,
@@ -152,11 +156,52 @@ $(function() {
                 data: []
             }]
 
+                       
+        }
 
-        };
-
+       });
     });
-});
+
+// create a function to pull in the latest heart rate points. call it on the load function of the chart. 
+    
+ function requestData(){
+        $.ajax({
+            url:'http://msbandhealth.azurewebsites.net/odata/PulsesAPI/',
+            success: function(data){
+
+                // shift if the series is longer than 20
+                shift = chart.series[0].data.length > 10;
+
+                // grab the updated data set and mutate it the way it needs to be
+                var HR = [];
+                var newTime = [];
+                 for (var i = 0; i < data.value.length; i++) {
+                    bpm = data.value[i].BPM;
+                    time = data.value[i].Time;
+                    HR.push({
+                            x: moment.parseZone(test),
+                            y: bpm
+                        });
+                    
+                }
+               console.log(HR);
+
+                // find points we need to add
+                var test = HR[HR.length - 1];
+                console.log(test);
+                var x = moment.parseZone(test.x),
+                    y = test.y;
+                    console.log(y);
+               // add the point
+                chart1.series[0].addPoint([x, y], true, shift);
+
+                // call requestData again after 30 seconds 
+                setTimeout(requestData, 30000);
+
+            } 
+        });
+    }
+
 </script>
 
 </html>
