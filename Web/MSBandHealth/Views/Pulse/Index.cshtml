@@ -26,8 +26,75 @@
     <div id="chartcontainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
     
     <script type="text/javascript">
+// create a function to pull in the latest heart rate points. call it on the load function of the chart. 
+    
+ function requestData(){
+        $.ajax({
+            url:'http://msbandhealth.azurewebsites.net/odata/PulsesAPI/',
+            success: function(data){
+
+                // shift if the series is longer than 20
+                shift = chart.series[0].data.length > 10;
+
+                // grab the updated data set and mutate it the way it needs to be
+                var HR = [];
+                var newTime = [];
+                 for (var i = 0; i < data.value.length; i++) {
+                    bpm = data.value[i].BPM;
+                    time = data.value[i].Time;
+                    HR.push({
+                            x: moment.parseZone(test),
+                            y: bpm
+                        });
+                    
+                }
+               // console.log(HR);
+
+                // find points we need to add
+                var test = HR[HR.length - 1];
+                
+                var x = moment.parseZone(test.x),
+                    y = test.y;
+                    
+               // add the point
+                chart.series[0].addPoint([x, y], true, shift);
+
+                // call requestData again after 30 seconds 
+                setTimeout(requestData, 30000);
+
+            } 
+        });
+    }
+
+// change data points on graph to rich grimes data points on click of button
+
+    function changeUser(){
+
+            // change based on which option is selected
+            var selectedUser = document.getElementById("WhichUser");
+            console.log(selectedUser.value);
+            if(selectedUser.value === "Sean"){
+                        // cut rick grimes down to 15 data points
+                        var  rickPoints = Sean.slice(Math.max(Sean.length - 15,1));
+                        // console.log(rickPoints);
+                        // set our data series to RickGrimes
+                        chart.series[0].setData(rickPoints,true);
+                        // console.log(chart1.data.series[1].data = rickPoints);
+                        chartTwo.series[0].setData(rickPoints,true);
+
+                        }else {
+                         var last15BPM = AllBPM.slice(Math.max(AllBPM.length - 15,1));
+                         chartTwo.series[0].setData(seriesData2, true);
+                         chart.series[0].setData(AllBPM.slice(Math.max(AllBPM.length - 15,1)), true);
+
+                        }  
+
+                
+
+            };
 
 
+// start of chart displaying history of heart rate 
         seriesData2 = [];
         chart2 = {
             yAxisMin: null,
@@ -159,6 +226,9 @@
     
 
 </script>
+
+ <!-- start of chart for real time update -->
+
 <script type="text/javascript">
 chart1 = {
     yAxisMin: null,
@@ -167,7 +237,7 @@ chart1 = {
 // empty objects for our data and to create chart
 
 AllBPM = [];
-RickGrimes = [];
+Sean = [];
 
 
                         
@@ -192,19 +262,19 @@ $(function() {
 
                 
 
-                // structure data for a particular user, in this case "rick grimes"!!
+                // structure data for a particular user, in this case "Sean Large"!!
                     for (var i = 0; i < data.value.length; i++) {
 
-                       if(data.value[i].Name == "Rick Grimes"){
-                        // console.log(data.value[i].BPM);
-                        var rickBPM = data.value[i].BPM;
-                        var rickTime = data.value[i].Time;
-                        RickGrimes.push({
-                            x: moment.parseZone(rickTime),
-                            y: rickBPM
+                       if(data.value[i].Name == "cdd014d9b8ffe74b"){
+                        console.log(data.value[i].Name);
+                        var SeanBPM = data.value[i].BPM;
+                        var SeanTime = data.value[i].Time;
+                        Sean.push({
+                            x: moment.parseZone(SeanTime),
+                            y: SeanBPM
                         });
                         
-                        // find higest and lowest hear rate for Rick Gries 
+                        // find higest and lowest hear rate for Sean Large 
                         chart1.yAxisMax = (function (array) {
                                     var pulse_array = [];
 
@@ -214,7 +284,7 @@ $(function() {
                                         }
                                     }
                                     return Math.max.apply(Math, pulse_array);
-                                })(RickGrimes);
+                                })(Sean);
 
                         chart1.yAxisMin = (function (array) {
                             var pulse_array = [];
@@ -225,7 +295,7 @@ $(function() {
                                 }
                             }
                             return Math.min.apply(Math, pulse_array);
-                        })(RickGrimes);
+                        })(Sean);
 
 
 
@@ -275,11 +345,7 @@ $(function() {
                 // set our data series 
                 chart1.data.series[0].data = last15BPM;
                 // create the chart 
-                chart = new Highcharts.Chart(chart1.data);
-
-
-                // change data points on graph to rich grimes data points on click of button
-             
+                chart = new Highcharts.Chart(chart1.data);  
 
             }
 
@@ -357,70 +423,6 @@ $(function() {
 
     
 
-// create a function to pull in the latest heart rate points. call it on the load function of the chart. 
-    
- function requestData(){
-        $.ajax({
-            url:'http://msbandhealth.azurewebsites.net/odata/PulsesAPI/',
-            success: function(data){
-
-                // shift if the series is longer than 20
-                shift = chart.series[0].data.length > 10;
-
-                // grab the updated data set and mutate it the way it needs to be
-                var HR = [];
-                var newTime = [];
-                 for (var i = 0; i < data.value.length; i++) {
-                    bpm = data.value[i].BPM;
-                    time = data.value[i].Time;
-                    HR.push({
-                            x: moment.parseZone(test),
-                            y: bpm
-                        });
-                    
-                }
-               // console.log(HR);
-
-                // find points we need to add
-                var test = HR[HR.length - 1];
-                
-                var x = moment.parseZone(test.x),
-                    y = test.y;
-                    
-               // add the point
-                chart.series[0].addPoint([x, y], true, shift);
-
-                // call requestData again after 30 seconds 
-                setTimeout(requestData, 30000);
-
-            } 
-        });
-    }
-
-    function changeUser(){
-
-            // change based on which option is selected
-            var selectedUser = document.getElementById("WhichUser");
-            console.log(selectedUser.value);
-            if(selectedUser.value === "Rick"){
-                        // cut rick grimes down to 15 data points
-                        var  rickPoints = RickGrimes.slice(Math.max(RickGrimes.length - 15,1));
-                        // console.log(rickPoints);
-                        // set our data series to RickGrimes
-                        chart.series[0].setData(rickPoints,true);
-                        // console.log(chart1.data.series[1].data = rickPoints);
-                        chartTwo.series[0].setData(rickPoints,true);
-
-                        }else {
-                         var last15BPM = AllBPM.slice(Math.max(AllBPM.length - 15,1));
-                         chartTwo.series[0].setData(seriesData2, true);
-                         chart.series[0].setData(AllBPM.slice(Math.max(AllBPM.length - 15,1)), true);
-
-                        }  
-
-                
-
-            };
 
                 
 </script>
