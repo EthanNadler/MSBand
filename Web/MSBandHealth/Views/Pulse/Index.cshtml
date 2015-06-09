@@ -75,12 +75,12 @@
             console.log(selectedUser.value);
             if(selectedUser.value === "Sean"){
                         // cut rick grimes down to 15 data points
-                        var  rickPoints = Sean.slice(Math.max(Sean.length - 15,1));
+                        var  seanPoints = Sean.slice(Math.max(Sean.length - 15,1));
                         // console.log(rickPoints);
                         // set our data series to RickGrimes
-                        chart.series[0].setData(rickPoints,true);
+                        chart.series[0].setData(seanPoints,true);
                         // console.log(chart1.data.series[1].data = rickPoints);
-                        chartTwo.series[0].setData(rickPoints,true);
+                        chartTwo.series[0].setData(seanPoints,true);
 
                         }else {
                          var last15BPM = AllBPM.slice(Math.max(AllBPM.length - 15,1));
