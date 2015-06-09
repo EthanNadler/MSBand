@@ -16,16 +16,18 @@
 <p>
     Pulse Chart <br>
     <br>
+   <body>
     <div id="container" style="width:100%"></div>
     <br>
     <select id="WhichUser" onchange="changeUser();">
         <option value="All">All Users</option>
-        <option value="Rick">Rick Grimes</option>
+        <option value="Sean">Sean Large</option>
     </select>
     <br>
     <div id="chartcontainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-    
-    <script type="text/javascript">
+
+</body>
+<script type="text/javascript">
 // create a function to pull in the latest heart rate points. call it on the load function of the chart. 
     
  function requestData(){
@@ -74,19 +76,11 @@
             var selectedUser = document.getElementById("WhichUser");
             console.log(selectedUser.value);
             if(selectedUser.value === "Sean"){
-                        // cut rick grimes down to 15 data points
-                        var  seanPoints = Sean.slice(Math.max(Sean.length - 15,1));
-                        // console.log(rickPoints);
-                        // set our data series to RickGrimes
-                        chart.series[0].setData(seanPoints,true);
-                        // console.log(chart1.data.series[1].data = rickPoints);
-                        chartTwo.series[0].setData(seanPoints,true);
+                        // set our data series to sean
+                        chartTwo.series[0].setData(Sean,true);
 
                         }else {
-                         var last15BPM = AllBPM.slice(Math.max(AllBPM.length - 15,1));
                          chartTwo.series[0].setData(seriesData2, true);
-                         chart.series[0].setData(AllBPM.slice(Math.max(AllBPM.length - 15,1)), true);
-
                         }  
 
                 
@@ -341,7 +335,7 @@ $(function() {
 
                 
                 // only let highcharts use last 15 data points so x axis displays properly 
-                var last15BPM = AllBPM.slice(Math.max(AllBPM.length - 15,1)); 
+                var last15BPM = Sean.slice(Math.max(Sean.length - 15,1)); 
                 // set our data series 
                 chart1.data.series[0].data = last15BPM;
                 // create the chart 
@@ -420,11 +414,6 @@ $(function() {
     });
 
     
-
-    
-
-
-                
 </script>
 
 
