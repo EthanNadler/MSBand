@@ -13,43 +13,49 @@
     Pulse Chart <br>
     <div id="chartcontainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
     <script type="text/javascript">
-        Highcharts.setOptions({
+
+
+        seriesData2 = [];
+        chart2 = {
+            yAxisMin: null,
+            yAxisMax: null
+        };
+        BPMHistory = [];
+
+       $(function() {
+        $(document).ready(function() {
+         Highcharts.setOptions({
             global: {
                 useUTC: false
             }
         });
 
         // empty objects for our data and to create chart
-        seriesData = [];
-        chart1 = {
-            yAxisMin: null,
-            yAxisMax: null
-        };
-        BPM = [];
-        time1 = [];
-
         var url = 'http://msbandhealth.azurewebsites.net/odata/PulsesAPI/';
 
         $.ajax({
             url: url,
             dataType: 'json',
-            context: seriesData,
+            context: seriesData2,
             success: function (data) {
 
-
+                   
                 // structure our data 
                 for (var i = 0; i < data.value.length; i++) {
-                    bpm = data.value[i].BPM;
-                    time = data.value[i].Time;
-                    console.log(time);
-                    this.push([time, BPM]);
-                    BPM.push(bpm);
-                    time1.push(time);
+                    bpm2 = data.value[i].BPM;
+                    time2 = data.value[i].Time;
+                   
+                     this.push({
+                            x: moment.parseZone(time2),
+                            y: bpm2
+                        })
+                    // console.log(moment.parseZone(time2));
+                    BPMHistory.push(bpm2);
                 }
 
-                console.log(seriesData);
+           
                 // find the highest pulse  so we can set it to the highest y point
-                chart1.yAxisMax = (function (array) {
+                chart2.yAxisMax = (function (array) {
                     var pulse_array = [];
 
                     for (var i = 0; i < array.length; i++) {
@@ -58,10 +64,10 @@
                         }
                     }
                     return Math.max.apply(Math, pulse_array);
-                })(BPM);
+                })(BPMHistory);
 
                 // find the lowest pulse rate and set it to lowest y point
-                chart1.yAxisMin = (function (array) {
+                chart2.yAxisMin = (function (array) {
                     var pulse_array = [];
 
                     for (var i = 0; i < array.length; i++) {
@@ -70,11 +76,11 @@
                         }
                     }
                     return Math.min.apply(Math, pulse_array);
-                })(BPM);
+                })(BPMHistory);
 
                 // set our data series and create new chart
-                chart1.data.series[0].data = BPM;
-                chart = new Highcharts.Chart(chart1.data);
+                chart2.data.series[0].data = seriesData2;
+                chartTwo = new Highcharts.Chart(chart2.data);
                 $('#chartcontainer').css({
                     height: '400px'
                 });
@@ -85,37 +91,27 @@
         // give highcharts something to render to
         var container = document.getElementById("chartcontainer")
 
-        chart1.data = {
+        chart2.data = {
 
             chart: {
                 renderTo: container,
                 type: 'spline',
                 animation: Highcharts.svg, // don't animate in old IE
-                marginRight: 10,
-                events: {
-                    load: function () {
-
-                        // set up the updating of the chart each second
-                        // needs to be an ajax call to microsoft band api
-                        // var series = this.series[0].data;
-                        // setInterval(function() {
-                        //     var x = time1, // current time
-                        //         y = BPM;
-                        //     series.addPoint([x, y], true, true);
-                        // }, 1000);
-                    }
-                }
+                marginRight: 10                
             },
             title: {
-                text: 'Microsoft Band: Real Time Pulse Analysis'
+                text: 'Heart Rate History'
             },
             xAxis: {
                 type: 'datetime',
-                tickPixelInterval: 150
+                tickPixelInterval: 150,
+                dateTimeLabelFormats: {
+
+                },
             },
             yAxis: {
-                min: chart1.yAxisMin,
-                max: chart1.yAxisMax,
+                min: chart2.yAxisMin,
+                max: chart2.yAxisMax,
                 title: {
                     text: 'Heart Rate'
                 },
@@ -140,12 +136,281 @@
             },
             series: [{
                 name: 'Beats Per Minute',
-                data: null
+                data: []
             }]
 
 
-        };
-    </script>
+        }
+    });
+});
+    
+
+</script>
+<script type="text/javascript">
+chart1 = {
+    yAxisMin: null,
+    yAxisMax: null
+};
+// empty objects for our data and to create chart
+
+AllBPM = [];
+RickGrimes = [];
+
+
+                        
+
+// console.log(chart1.data.series);
+
+$(function() {
+    $(document).ready(function() {
+        Highcharts.setOptions({
+            global: {
+                useUTC: false
+            }
+        });
+
+
+
+        var url = 'http://msbandhealth.azurewebsites.net/odata/PulsesAPI/';
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            success: function(data) {
+
+                
+
+                // structure data for a particular user, in this case "rick grimes"!!
+                    for (var i = 0; i < data.value.length; i++) {
+
+                       if(data.value[i].Name == "Rick Grimes"){
+                        // console.log(data.value[i].BPM);
+                        var rickBPM = data.value[i].BPM;
+                        var rickTime = data.value[i].Time;
+                        RickGrimes.push({
+                            x: moment.parseZone(rickTime),
+                            y: rickBPM
+                        });
+                        
+                        // find higest and lowest hear rate for Rick Gries 
+                        chart1.yAxisMax = (function (array) {
+                                    var pulse_array = [];
+
+                                    for (var i = 0; i < array.length; i++) {
+                                        if (array[i] != null) {
+                                            pulse_array.push(array[i]);
+                                        }
+                                    }
+                                    return Math.max.apply(Math, pulse_array);
+                                })(RickGrimes);
+
+                        chart1.yAxisMin = (function (array) {
+                            var pulse_array = [];
+
+                            for (var i = 0; i < array.length; i++) {
+                                if (array[i] != null) {
+                                    pulse_array.push(array[i]);
+                                }
+                            }
+                            return Math.min.apply(Math, pulse_array);
+                        })(RickGrimes);
+
+
+
+                       };  
+
+
+                    };
+                    
+
+                // structure our data for every user data point
+                for (var i = 0; i < data.value.length; i++) {
+                    var bpm = data.value[i].BPM;
+                    var time = data.value[i].Time;
+                    AllBPM.push({
+                            x: moment.parseZone(time),
+                            y: bpm
+                        });
+                }
+               
+                // find the highest and lowest Heart Rate and make that the Ymin and Ymax
+                chart1.yAxisMax = (function (array) {
+                    var pulse_array = [];
+
+                    for (var i = 0; i < array.length; i++) {
+                        if (array[i] != null) {
+                            pulse_array.push(array[i]);
+                        }
+                    }
+                    return Math.max.apply(Math, pulse_array);
+                })(AllBPM);
+
+                chart1.yAxisMin = (function (array) {
+                    var pulse_array = [];
+
+                    for (var i = 0; i < array.length; i++) {
+                        if (array[i] != null) {
+                            pulse_array.push(array[i]);
+                        }
+                    }
+                    return Math.min.apply(Math, pulse_array);
+                })(AllBPM);
+               
+
+                
+                // only let highcharts use last 15 data points so x axis displays properly 
+                var last15BPM = AllBPM.slice(Math.max(AllBPM.length - 15,1)); 
+                // set our data series 
+                chart1.data.series[0].data = last15BPM;
+                // create the chart 
+                chart = new Highcharts.Chart(chart1.data);
+
+
+                // change data points on graph to rich grimes data points on click of button
+             
+
+            }
+
+    });
+
+
+        // give highcharts something to render to
+        container = document.getElementById("container");
+
+        chart1.data = {
+
+            chart: {
+                renderTo: container,
+                type: 'spline',
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                events:{ 
+                    load: requestData()
+                    
+            }
+        },
+            title: {
+                text: 'Microsoft Band: Real Time Pulse Analysis'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 1,
+               dateTimeLabelFormats: {
+                    millisecond: '%H:%M:%S.%L',
+                    second: '%H:%M:%S',
+                    minute: '%H:%M',
+                    hour: '%H:%M',
+                   
+                }
+                
+            },
+            yAxis: {
+                min: chart1.yAxisMin,
+                max: chart1.yAxisMax,
+                title: {
+                    text: 'Heart Rate'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                formatter: function() {
+                    return '<b>' + this.series.name + '</b><br/>' +
+                    Highcharts.numberFormat(this.y, 2) + '<br/>' +
+                        Highcharts.dateFormat('%H:%M:%S', this.x);
+                        
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: 'Beats Per Minute',
+                data: []
+            }]
+
+                       
+        }
+
+       });
+    });
+
+    
+
+    
+
+// create a function to pull in the latest heart rate points. call it on the load function of the chart. 
+    
+ function requestData(){
+        $.ajax({
+            url:'http://msbandhealth.azurewebsites.net/odata/PulsesAPI/',
+            success: function(data){
+
+                // shift if the series is longer than 20
+                shift = chart.series[0].data.length > 10;
+
+                // grab the updated data set and mutate it the way it needs to be
+                var HR = [];
+                var newTime = [];
+                 for (var i = 0; i < data.value.length; i++) {
+                    bpm = data.value[i].BPM;
+                    time = data.value[i].Time;
+                    HR.push({
+                            x: moment.parseZone(test),
+                            y: bpm
+                        });
+                    
+                }
+               // console.log(HR);
+
+                // find points we need to add
+                var test = HR[HR.length - 1];
+                
+                var x = moment.parseZone(test.x),
+                    y = test.y;
+                    
+               // add the point
+                chart.series[0].addPoint([x, y], true, shift);
+
+                // call requestData again after 30 seconds 
+                setTimeout(requestData, 30000);
+
+            } 
+        });
+    }
+
+    function changeUser(){
+
+            // change based on which option is selected
+            var selectedUser = document.getElementById("WhichUser");
+            console.log(selectedUser.value);
+            if(selectedUser.value === "Rick"){
+                        // cut rick grimes down to 15 data points
+                        var  rickPoints = RickGrimes.slice(Math.max(RickGrimes.length - 15,1));
+                        // console.log(rickPoints);
+                        // set our data series to RickGrimes
+                        chart.series[0].setData(rickPoints,true);
+                        // console.log(chart1.data.series[1].data = rickPoints);
+                        chartTwo.series[0].setData(rickPoints,true);
+
+                        }else {
+                         var last15BPM = AllBPM.slice(Math.max(AllBPM.length - 15,1));
+                         chartTwo.series[0].setData(seriesData2, true);
+                         chart.series[0].setData(AllBPM.slice(Math.max(AllBPM.length - 15,1)), true);
+
+                        }  
+
+                
+
+            };
+
+                
+</script>
 
 
 </p>
